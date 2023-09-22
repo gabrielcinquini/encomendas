@@ -46,6 +46,15 @@
     }
   ],
   "orders": [
-    
+    {
+      "id": 2,
+      "userId": 1,
+      "createdBy": "Adolf Winchester",
+      "name": "123",
+      "fac": "321",
+      "contactPhone": "123",
+      "item": "ZN",
+      "quantity": "321"
+    }
   ]
 }
