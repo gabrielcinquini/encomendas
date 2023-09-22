@@ -11,7 +11,7 @@ export function useOrders() {
   
       // Forward the authorization header
       const response = await axios.get(
-        "http://localhost:3000/api/registerOrder"
+        `${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder`
       );
            
       if(response.status === 200) {

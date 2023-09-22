@@ -20,7 +20,7 @@ export default function Home() {
 
   const handleRegister = async () => {
     try {
-      const res = await axios.post("http://localhost:3000/api/register", user);
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_APIURL}/api/register`, user);
       
       const token = res.data.accessToken;
       console.log(token);

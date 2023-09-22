@@ -22,7 +22,7 @@ export default function Dashboard() {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:3000/api/registerOrder/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder/${id}`);
 
       setOrders((prevState) => {
         return prevState.filter((order: OrdersType) => order.id !== id);

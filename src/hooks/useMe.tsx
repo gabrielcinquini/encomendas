@@ -17,7 +17,7 @@ export function useMe() {
       if (!token) throw new Error('Token missing');
   
       // Forward the authorization header
-      const response = await axios.get('http://localhost:3000/api/me', {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_APIURL}/api/me`, {
         headers: { Authorization: token },
       });
       setUser(response.data);
