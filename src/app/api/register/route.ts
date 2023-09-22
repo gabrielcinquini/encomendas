@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     provider: "local",
     confirmed: true,
     blocked: false,
-    fac: fac,
+    fac: formatName(fac),
     rpNumber: rpNumber,
     nameRP: formatName(nameRP),
   };

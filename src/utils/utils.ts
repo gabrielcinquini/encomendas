@@ -1,6 +1,9 @@
 import dbJson from '../database/db.json'
 
-export type dbType = typeof dbJson
+export type dbType = {
+  users: UserType[];
+  orders: OrdersType[];
+}
 
 export type UserType = {
   id: number;
