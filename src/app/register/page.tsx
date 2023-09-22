@@ -23,7 +23,6 @@ export default function Home() {
       const res = await axios.post(`${process.env.NEXT_PUBLIC_APIURL}/api/register`, user);
       
       const token = res.data.accessToken;
-      console.log(token);
       localStorage.setItem("token", token);
       router.push("/home");
     } catch (err) {
