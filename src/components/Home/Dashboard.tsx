@@ -3,7 +3,7 @@
 import "react-toastify/dist/ReactToastify.css";
 
 import { ToastContainer, toast } from "react-toastify";
-import { OrdersType } from "@/utils/utils";
+import { OrdersType, time } from "@/utils/utils";
 import { useMe } from "@/hooks/useMe";
 import { useOrders } from "@/hooks/useOrders";
 import { Trash2, Pencil } from "lucide-react";
@@ -20,7 +20,7 @@ export default function Dashboard() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await axios.delete(`${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder/${id}`);
 
@@ -41,7 +41,8 @@ export default function Dashboard() {
       ? orders
       : orders.filter((order: OrdersType) => order.userId === user?.id);
 
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const totalPages = filteredOrders.length > 0 ? Math.ceil(filteredOrders.length / itemsPerPage) : 1;
+  console.log(filteredOrders.length)
 
   return (
     <div>
@@ -55,6 +56,7 @@ export default function Dashboard() {
               <th>Item</th>
               <th>Quantidade</th>
               <th>Total</th>
+              <th>Criado em</th>
               <th></th>
             </tr>
           </thead>
@@ -71,11 +73,12 @@ export default function Dashboard() {
                   <td>{order.item}</td>
                   <td>{order.quantity}</td>
                   <td>
-                    {(order.quantity * 20).toLocaleString("pt-BR", {
+                    {(order.quantity * 100).toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
                   </td>
+                  <td>{time(order.createdAt)}</td>
                   <td align="right">
                     <button
                       className="bg-red-800 p-2 rounded-md"
@@ -108,7 +111,7 @@ export default function Dashboard() {
                   <td className="p-2">{order.item}</td>
                   <td>{order.quantity}</td>
                   <td>
-                    {(order.quantity * 20).toLocaleString("pt-BR", {
+                    {(order.quantity * 100).toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
@@ -117,6 +120,7 @@ export default function Dashboard() {
                     <button
                       className="bg-red-800 p-2 rounded-md"
                       onClick={() => {
+                        console.log(order.id);
                         handleDelete(order.id);
                       }}
                     >

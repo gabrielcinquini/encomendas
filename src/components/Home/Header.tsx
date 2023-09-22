@@ -20,7 +20,7 @@ export default function Header() {
     name: "",
     contactPhone: "",
     fac: "",
-    item: "ZN",
+    item: "K2",
     quantity: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -189,7 +189,7 @@ export default function Header() {
                 defaultValue={registerOrder.item}
                 onChange={handleSelectChange}
               >
-                <option value="ZN">ZN</option>
+                <option value="K2">K2</option>
               </select>
               <input
                 name="quantity"

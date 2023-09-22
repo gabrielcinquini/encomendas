@@ -1,23 +1,17 @@
-import dbJson from '../database/db.json'
-
-export type dbType = {
-  users: UserType[];
-  orders: OrdersType[];
-}
-
 export type UserType = {
-  id: number;
+  id: string;
   password: string;
+  confirmPassword: string;
   username: string;
   provider: string;
-  confirmed: Boolean;
-  blocked: Boolean;
+  confirmed: boolean;
+  blocked: boolean;
   fac: string;
   nameRP: string;
   rpNumber: string;
 }
 export type OmitPasswordUserType = {
-  id: number;
+  id: string;
   username: string;
   provider: string;
   confirmed: Boolean;
@@ -28,14 +22,15 @@ export type OmitPasswordUserType = {
 }
 
 export type OrdersType = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   name: string;
   createdBy: string;
   contactPhone: string;
   fac: string;
   item: string;
   quantity: number;
+  createdAt: string;
 }
 
 export function formatName(name: string) {
@@ -63,7 +58,21 @@ export function calcularTotal(orders: OrdersType[]) {
     return total;
   }, 0);
 
-  const totalMultiplicado = totalQuantidades * 20;
+  const totalMultiplicado = totalQuantidades * 100;
 
   return totalMultiplicado;
+}
+
+export function time(timestamp: string): string {
+  const date = new Date(timestamp);
+  date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
+  const dia = date.getUTCDate();
+  const mes = date.getUTCMonth() + 1;
+  const hora = date.getUTCHours();
+  const minuto = date.getUTCMinutes();
+
+  const diaFormatado = dia.toString().padStart(2, '0');
+  const mesFormatado = mes.toString().padStart(2, '0');
+
+  return `${diaFormatado}/${mesFormatado} às ${hora}:${minuto}`;
 }

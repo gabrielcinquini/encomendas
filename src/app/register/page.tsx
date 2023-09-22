@@ -6,14 +6,16 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { UserType } from "@/utils/utils";
 
 export default function Home() {
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<Omit <UserType, "id" | "provider" | "confirmed" | "blocked">>({
     username: "",
     nameRP: "",
     rpNumber: "",
     fac: "",
     password: "",
+    confirmPassword: ""
   });
 
   const router = useRouter();
@@ -31,9 +33,20 @@ export default function Home() {
           toast.error("As credenciais devem ser inseridas", {
             position: toast.POSITION.TOP_RIGHT,
           });
-          console.error("Erro 400 - Bad Request:", err.response?.data.message);
         } else if (err.response?.status === 401) {
           toast.error("Usuário já cadastrado", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } else if (err.response?.status === 402) {
+          toast.error("Usuário com esse nome do RP já cadastrado", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } else if (err.response?.status === 403) {
+          toast.error("Número já cadastrado", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } else if (err.response?.status === 399) {
+          toast.error("As senhas não coincidem", {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
@@ -94,6 +107,13 @@ export default function Home() {
           type="password"
           name="password"
           placeholder="Senha"
+          onChange={handleChange}
+        />
+        <input
+          className="p-2 rounded-xl"
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirmar Senha"
           onChange={handleChange}
         />
         <input

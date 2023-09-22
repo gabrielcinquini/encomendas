@@ -1,30 +1,36 @@
 import { JsonWebTokenError, verify } from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-import fs from "fs";
 
-import { dbType } from "@/utils/utils";
+import { prismaClient } from "@/database/client";
 
-export function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const token = req.headers.get("Authorization");
 
   if (!token) {
     return NextResponse.json({ message: "Invalid User" }, { status: 401 });
   }
   try {
-    const { sub: userId } = verify(token, "SUPER_SECRET") as unknown as { sub: number };
+    const { sub: userId } = verify(token, "SUPER_SECRET") as unknown as {
+      sub: number;
+    };
     if (!userId) {
       return NextResponse.json({ message: "Invalid User" }, { status: 401 });
     }
-    
 
-    const dbPath = path.join(process.cwd(), "src", "database", "db.json");
-    let data: dbType = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id: userId 
+      }
+    });
 
-    const user = data.users.find((u) => u.id === userId);
+    if(!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 401 });
+    }
+
+
     Object.assign(user || {}, {
-      password: undefined
-    })
+      password: undefined,
+    });
 
     return NextResponse.json(user);
   } catch (err) {
