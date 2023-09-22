@@ -64,22 +64,19 @@ export default function Header() {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/registerOrder",
-        {
-          userId: user?.id,
-          createdBy: user?.nameRP,
-          name: registerOrder.name,
-          contactPhone: registerOrder.contactPhone,
-          fac: registerOrder.fac,
-          item: registerOrder.item,
-          quantity: registerOrder.quantity,
-        }
-      );
+      await axios.post(`${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder`, {
+        userId: user?.id,
+        createdBy: user?.nameRP,
+        name: registerOrder.name,
+        contactPhone: registerOrder.contactPhone,
+        fac: registerOrder.fac,
+        item: registerOrder.item,
+        quantity: registerOrder.quantity,
+      });
       toast.success("Encomenda cadastrada com sucesso!", {
         position: toast.POSITION.TOP_LEFT,
       });
-      closeModal()
+      closeModal();
     } catch (err) {
       //@ts-ignore
       if (err instanceof AxiosError && err.response.status === 400) {
