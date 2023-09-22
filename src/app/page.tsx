@@ -54,14 +54,12 @@ export default function Home() {
           className="p-2 rounded-xl"
           type="text"
           placeholder="Usuário"
-          defaultValue="characteres"
           onChange={(e) => setUsername(e.target.value)}
         />
         <input
           className="p-2 rounded-xl"
           type="password"
           placeholder="Senha"
-          defaultValue="123456"
           onChange={(e) => setPassword(e.target.value)}
         />
         <div className="flex w-full justify-between">
