@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id         String          @id @default(uuid())
+  id         String       @id @default(uuid())
   username   String
   password   String
   provider   String
@@ -21,10 +21,12 @@ model User {
   rpNumber   String
   nameRP     String
   encomendas Encomendas[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 }
 
 model Encomendas {
-  id           String      @id @default(uuid())
+  id           String   @id @default(uuid())
   createdBy    String
   name         String? //Posso ter o nome que o admin registrou a venda no nome do cliente
   fac          String? //Posso ter a facçao que o admin registrou a venda no nome do cliente
