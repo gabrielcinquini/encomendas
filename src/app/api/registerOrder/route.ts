@@ -5,7 +5,7 @@ import { prismaClient } from "@/database/client";
 export async function GET() {
   const orders = await prismaClient.encomendas.findMany({
     orderBy: {
-      createdAt: "asc",
+      createdAt: "desc",
     },
   });
 
