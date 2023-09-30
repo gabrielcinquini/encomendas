@@ -56,5 +56,10 @@ export async function POST(req: NextRequest) {
     expiresIn: "1d",
   });
 
+  await prismaClient.user.update({
+    where: { id: user.id },
+    data: { lastLogin: new Date() }
+  });
+
   return NextResponse.json({ accessToken, user });
 }

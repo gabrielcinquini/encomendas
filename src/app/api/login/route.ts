@@ -22,11 +22,19 @@ export async function POST(req: NextRequest) {
   });
 
   if (!user || !compareSync(password, user.password)) {
-    return NextResponse.json({ message: "Email ou senha incorretas" }, { status: 404 });
+    return NextResponse.json(
+      { message: "Email ou senha incorretas" },
+      { status: 404 }
+    );
   }
 
   const accessToken = sign({ sub: user.id }, "SUPER_SECRET", {
     expiresIn: "1d",
+  });
+
+  await prismaClient.user.update({
+    where: { id: user.id },
+    data: { lastLogin: new Date() }
   });
 
   return NextResponse.json({

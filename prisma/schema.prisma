@@ -22,7 +22,7 @@ model User {
   nameRP     String
   encomendas Encomendas[]
   createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  lastLogin  DateTime?
 }
 
 model Encomendas {
