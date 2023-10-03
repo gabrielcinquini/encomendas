@@ -18,12 +18,14 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_APIURL}/api/login`, {
-        username: username,
-        password: password,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_APIURL}/api/login`,
+        {
+          username: username,
+          password: password,
+        }
+      );
 
-      
       if (response.status === 200) {
         router.push("/home");
         const token = response.data.accessToken;
@@ -32,14 +34,15 @@ export default function Home() {
       }
     } catch (error) {
       // @ts-ignore
-      if(error instanceof AxiosError && error.response.status === 404) {
-        toast.error('Credenciais não encontradas', {
-          position: toast.POSITION.TOP_RIGHT
+      if (error instanceof AxiosError && error.response.status === 404) {
+        toast.error("Credenciais não encontradas", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } else {
+        toast.error("Não foi possível conectar ao banco de dados", {
+          position: toast.POSITION.TOP_RIGHT,
         });
       }
-      toast.error('Não foi possível conectar ao banco de dados', {
-        position: toast.POSITION.TOP_RIGHT
-      });
     }
   };
 
