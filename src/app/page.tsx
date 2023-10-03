@@ -37,7 +37,9 @@ export default function Home() {
           position: toast.POSITION.TOP_RIGHT
         });
       }
-      console.error('Erro ao fazer login', error);
+      toast.error('Não foi possível conectar ao banco de dados', {
+        position: toast.POSITION.TOP_RIGHT
+      });
     }
   };
 
