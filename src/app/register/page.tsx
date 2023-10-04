@@ -2,28 +2,32 @@
 
 import "react-toastify/dist/ReactToastify.css";
 
-import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { UserType } from "@/utils/utils";
+import { CreateRegisterFormData, fac, nameRP, registerUserFormSchema, username } from "@/utils/utils";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ErrorMessage from "@/components/ErrorMessage";
 
 export default function Home() {
-  const [user, setUser] = useState<Omit <UserType, "id" | "provider" | "confirmed" | "blocked">>({
-    username: "",
-    nameRP: "",
-    rpNumber: "",
-    fac: "",
-    password: "",
-    confirmPassword: ""
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateRegisterFormData>({
+    mode: "all",
+    resolver: zodResolver(registerUserFormSchema),
   });
 
   const router = useRouter();
 
-  const handleRegister = async () => {
+  const handleRegister = async (user: CreateRegisterFormData) => {
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_APIURL}/api/register`, user);
-      
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_APIURL}/api/register`, user);
+
       const token = res.data.accessToken;
       localStorage.setItem("token", token);
       router.push("/home");
@@ -51,71 +55,72 @@ export default function Home() {
           });
         }
       } else {
-        toast.error("Erro de rede ou outra falha", {
+        toast.error("Não foi possível conectar com o banco de dados", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({
-      ...user,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   return (
     <div className="flex h-screen justify-center items-center">
       <form
         className="flex flex-col gap-2 items-center text-gray-800"
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleRegister();
-        }}
+        onSubmit={handleSubmit(handleRegister)}
       >
         <input
           className="p-2 rounded-xl"
           type="text"
-          name="username"
           placeholder="Usuário"
-          onChange={handleChange}
-        />
+          {...register("username", {
+            onChange: username
+          })}
+          autoComplete='off'
+          />
+          {errors.username && <ErrorMessage message={errors.username.message}/>}
         <input
           className="p-2 rounded-xl"
           type="text"
-          name="nameRP"
           placeholder="Nome e Sobrenome RP"
-          onChange={handleChange}
-        />
+          {...register("nameRP", {
+            onChange: nameRP
+          })}
+          autoComplete='off'
+          />
+          {errors.nameRP && <ErrorMessage message={errors.nameRP.message}/>}
         <input
           className="p-2 rounded-xl"
           type="text"
-          name="rpNumber"
           placeholder="Número celular RP"
-          onChange={handleChange}
-        />
+          {...register("rpNumber")}
+          autoComplete='off'
+          />
+          {errors.rpNumber && <ErrorMessage message={errors.rpNumber.message}/>}
         <input
           className="p-2 rounded-xl"
           type="text"
-          name="fac"
           placeholder="Facção"
-          onChange={handleChange}
-        />
+          {...register("fac", {
+            onChange: fac
+          })}
+          autoComplete='off'
+          />
+          {errors.fac && <ErrorMessage message={errors.fac.message}/>}
         <input
           className="p-2 rounded-xl"
           type="password"
-          name="password"
           placeholder="Senha"
-          onChange={handleChange}
-        />
+          {...register("password")}
+          />
+          {errors.password && <ErrorMessage message={errors.password.message}/>}
         <input
           className="p-2 rounded-xl"
           type="password"
-          name="confirmPassword"
           placeholder="Confirmar Senha"
-          onChange={handleChange}
-        />
+          {...register("confirmPassword")}
+          autoComplete='off'
+          />
+          {errors.confirmPassword && <ErrorMessage message={errors.confirmPassword.message}/>}
         <input
           className="text-white px-6 py-2 rounded-xl bg-lime-600 w-fit hover:cursor-pointer"
           type="submit"

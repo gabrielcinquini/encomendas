@@ -5,24 +5,31 @@ import "react-toastify/dist/ReactToastify.css";
 import axios, { AxiosError } from "axios";
 import Link from "next/link";
 
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+
 import { toast, ToastContainer } from "react-toastify";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CreateLoginFormData, loginUserFormSchema } from "@/utils/utils";
+import ErrorMessage from "@/components/ErrorMessage";
 
 export default function Home() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
 
+  const { register, handleSubmit, formState: {errors} } = useForm<CreateLoginFormData>({
+    mode: 'all',
+    resolver: zodResolver(loginUserFormSchema),
+  });
+  
   const router = useRouter();
-
-  const handleLogin = async () => {
+  
+  const handleLogin = async (data: CreateLoginFormData) => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_APIURL}/api/login`,
         {
-          username: username,
-          password: password,
+          username: data.username,
+          password: data.password,
         }
       );
 
@@ -50,23 +57,24 @@ export default function Home() {
     <div className="flex h-screen justify-center items-center">
       <form
         className="flex flex-col gap-2 items-center text-gray-800"
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleLogin();
-        }}
+        onSubmit={handleSubmit(handleLogin)}
       >
         <input
           className="p-2 rounded-xl"
           type="text"
           placeholder="Usuário"
-          onChange={(e) => setUsername(e.target.value)}
+          {...register('username')}
+          autoComplete='off'
         />
+        {errors.username && <ErrorMessage message={errors.username.message}/>}
         <input
           className="p-2 rounded-xl"
           type="password"
           placeholder="Senha"
-          onChange={(e) => setPassword(e.target.value)}
+          {...register('password')}
+          autoComplete='off'
         />
+        {errors.password && <ErrorMessage message={errors.password.message}/>}
         <div className="flex w-full justify-between">
           <input
             className="text-white px-6 py-2 rounded-xl bg-lime-600 w-fit hover:cursor-pointer"

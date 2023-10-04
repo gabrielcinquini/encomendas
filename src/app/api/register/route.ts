@@ -3,27 +3,23 @@ import { hashSync } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 
 import { prismaClient } from "@/database/client";
-import { formatName } from "@/utils/utils";
+import { formatName, registerUserFormSchema } from "@/utils/utils";
 
 export async function POST(req: NextRequest) {
-  const { username, password, fac, rpNumber, nameRP, confirmPassword } = await req.json();
+  const body = await req.json();
 
-  if (!username || !password || !fac || !rpNumber || !nameRP || !confirmPassword) {
-    return NextResponse.json(
-      { message: "As credenciais devem ser inseridas" },
-      { status: 400 }
-    );
+  const parsedBody = registerUserFormSchema.safeParse(body)
+  if(!parsedBody.success) {
+    return NextResponse.json(parsedBody.error)
   }
 
-  if(password !== confirmPassword) {
-    return NextResponse.json({ message: "As senhas não conincidem" }, { status: 399})
-  }
+  const {username, password, fac, rpNumber, nameRP} = parsedBody.data;
 
   const userNameExists = await prismaClient.user.findFirst({
     where: { username: username },
   });
   const nameRPExists = await prismaClient.user.findFirst({
-    where: { nameRP: nameRP },
+    where: { nameRP: formatName(nameRP) },
   });
   const rpNumberExists = await prismaClient.user.findFirst({
     where: { rpNumber: rpNumber },
