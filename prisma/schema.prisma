@@ -14,9 +14,9 @@ model User {
   id         String       @id @default(uuid())
   username   String
   password   String
-  provider   String
-  confirmed  Boolean
-  blocked    Boolean
+  provider   String       @default("local")
+  confirmed  Boolean      @default(true)
+  blocked    Boolean      @default(false)
   fac        String
   rpNumber   String
   nameRP     String

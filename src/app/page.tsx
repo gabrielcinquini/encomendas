@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { toast, ToastContainer } from "react-toastify";
 
 import { useRouter } from "next/navigation";
-import { CreateLoginFormData, loginUserFormSchema } from "@/utils/utils";
+import { CreateLoginFormData, loginUserFormSchema, username } from "@/utils/utils";
 import ErrorMessage from "@/components/ErrorMessage";
 
 export default function Home() {
@@ -63,7 +63,9 @@ export default function Home() {
           className="p-2 rounded-xl"
           type="text"
           placeholder="Usuário"
-          {...register('username')}
+          {...register('username', {
+            onChange: username
+          })}
           autoComplete='off'
         />
         {errors.username && <ErrorMessage message={errors.username.message}/>}

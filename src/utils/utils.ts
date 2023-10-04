@@ -36,6 +36,17 @@ export type CreateLoginFormData = z.infer<typeof loginUserFormSchema>
 
 
 
+export type OmitPasswordUserType = {
+  id: string;
+  username: string;
+  provider: string;
+  confirmed: Boolean;
+  blocked: Boolean;
+  fac: string;
+  nameRP: string;
+  rpNumber: string;
+}
+
 export type OrdersType = {
   id: string;
   userId: string;
