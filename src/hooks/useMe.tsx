@@ -3,11 +3,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { OmitPasswordUserType } from '@/utils/utils';
+import { User } from '@prisma/client';
 
 export function useMe() {
-  const [user, setUser] = useState<OmitPasswordUserType>();
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User>();
   const router = useRouter()
 
   async function getUser() {
@@ -17,17 +16,15 @@ export function useMe() {
       if (!token) throw new Error('Token missing');
   
       // Forward the authorization header
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_APIURL}/api/me`, {
+      const response = await axios.get<User>(`${process.env.NEXT_PUBLIC_APIURL}/api/me`, {
         headers: { Authorization: token },
       });
       setUser(response.data);
-      setIsLoading(false)
   
     } catch (error) {
       console.error('Erro:', error); // Registre qualquer erro ocorrido
       localStorage.removeItem('token');
       router.push('/')
-      setIsLoading(false)
     }
   }
   
@@ -36,5 +33,5 @@ export function useMe() {
     getUser();
   }, []);
 
-  return { user, setUser, isLoading, setIsLoading };
+  return { user, setUser };
 }

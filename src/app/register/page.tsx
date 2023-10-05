@@ -5,7 +5,16 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { CreateRegisterFormData, fac, nameRP, registerUserFormSchema, username } from "@/utils/utils";
+import {
+  formatFac,
+  formatNameRP,
+  formatRPNumber,
+  formatUsername,
+} from "@/utils/utils";
+import {
+  CreateRegisterFormData,
+  registerUserFormSchema,
+} from "@/validations/validations";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +35,9 @@ export default function Home() {
   const handleRegister = async (user: CreateRegisterFormData) => {
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_APIURL}/api/register`, user);
+        `${process.env.NEXT_PUBLIC_APIURL}/api/register`,
+        user
+      );
 
       const token = res.data.accessToken;
       localStorage.setItem("token", token);
@@ -73,54 +84,58 @@ export default function Home() {
           type="text"
           placeholder="Usuário"
           {...register("username", {
-            onChange: username
+            onChange: formatUsername,
           })}
-          autoComplete='off'
-          />
-          {errors.username && <ErrorMessage message={errors.username.message}/>}
+          autoComplete="off"
+        />
+        {errors.username && <ErrorMessage message={errors.username.message} />}
         <input
           className="p-2 rounded-xl"
           type="text"
           placeholder="Nome e Sobrenome RP"
           {...register("nameRP", {
-            onChange: nameRP
+            onChange: formatNameRP,
           })}
-          autoComplete='off'
-          />
-          {errors.nameRP && <ErrorMessage message={errors.nameRP.message}/>}
+          autoComplete="off"
+        />
+        {errors.nameRP && <ErrorMessage message={errors.nameRP.message} />}
         <input
           className="p-2 rounded-xl"
           type="text"
           placeholder="Número celular RP"
-          {...register("rpNumber")}
-          autoComplete='off'
-          />
-          {errors.rpNumber && <ErrorMessage message={errors.rpNumber.message}/>}
+          {...(register("rpNumber", {
+            onChange: formatRPNumber
+          }))}
+          autoComplete="off"
+        />
+        {errors.rpNumber && <ErrorMessage message={errors.rpNumber.message} />}
         <input
           className="p-2 rounded-xl"
           type="text"
           placeholder="Facção"
           {...register("fac", {
-            onChange: fac
+            onChange: formatFac,
           })}
-          autoComplete='off'
-          />
-          {errors.fac && <ErrorMessage message={errors.fac.message}/>}
+          autoComplete="off"
+        />
+        {errors.fac && <ErrorMessage message={errors.fac.message} />}
         <input
           className="p-2 rounded-xl"
           type="password"
           placeholder="Senha"
           {...register("password")}
-          />
-          {errors.password && <ErrorMessage message={errors.password.message}/>}
+        />
+        {errors.password && <ErrorMessage message={errors.password.message} />}
         <input
           className="p-2 rounded-xl"
           type="password"
           placeholder="Confirmar Senha"
           {...register("confirmPassword")}
-          autoComplete='off'
-          />
-          {errors.confirmPassword && <ErrorMessage message={errors.confirmPassword.message}/>}
+          autoComplete="off"
+        />
+        {errors.confirmPassword && (
+          <ErrorMessage message={errors.confirmPassword.message} />
+        )}
         <input
           className="text-white px-6 py-2 rounded-xl bg-lime-600 w-fit hover:cursor-pointer"
           type="submit"

@@ -20,17 +20,22 @@ export async function GET(req: NextRequest) {
     const user = await prismaClient.user.findFirst({
       where: {
         id: userId 
+      },
+      select: {
+        id: true,
+        fac: true,
+        nameRP: true,
+        blocked: true,
+        confirmed: true,
+        provider: true,
+        username: true,
+        rpNumber: true
       }
     });
 
     if(!user) {
       return NextResponse.json({ message: "User not found" }, { status: 401 });
     }
-
-
-    Object.assign(user || {}, {
-      password: undefined,
-    });
 
     return NextResponse.json(user);
   } catch (err) {

@@ -3,7 +3,8 @@ import { hashSync } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 
 import { prismaClient } from "@/database/client";
-import { formatName, registerUserFormSchema } from "@/utils/utils";
+import { formatName } from "@/utils/utils";
+import { registerUserFormSchema } from "@/validations/validations";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -57,5 +58,5 @@ export async function POST(req: NextRequest) {
     data: { lastLogin: new Date() }
   });
 
-  return NextResponse.json({ accessToken, user });
+  return NextResponse.json({ accessToken });
 }

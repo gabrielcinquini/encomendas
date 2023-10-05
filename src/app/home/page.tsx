@@ -2,24 +2,17 @@
 
 import Header from "@/components/Home/Header";
 import { useMe } from "@/hooks/useMe";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Dashboard from "@/components/Home/Dashboard";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const { user, setUser, isLoading, setIsLoading } = useMe();
-  const router = useRouter();
+  const { user } = useMe();
+  if(!user) return <p>Loading...</p>
 
   return (
-    <>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="h-screen">
-          <Header />
-          <Dashboard />
-        </div>
-      )}
-    </>
+    <div className="h-screen">
+      <Header user={user}/>
+      <Dashboard user={user}/>
+    </div>
   );
 }

@@ -28,8 +28,8 @@ model User {
 model Encomendas {
   id           String   @id @default(uuid())
   createdBy    String
-  name         String? //Posso ter o nome que o admin registrou a venda no nome do cliente
-  fac          String? //Posso ter a facçao que o admin registrou a venda no nome do cliente
+  name         String?
+  fac          String?
   contactPhone String
   item         String
   quantity     Int

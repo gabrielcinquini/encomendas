@@ -1,6 +1,7 @@
+"use client"
+
 import "react-toastify/dist/ReactToastify.css";
 
-import { useMe } from "@/hooks/useMe";
 import React, { useState } from "react";
 import HeaderCard from "../HeaderCard";
 import Modal from "react-modal";
@@ -8,22 +9,31 @@ import axios, { AxiosError } from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useOrders } from "@/hooks/useOrders";
-import { calcularTotal, OrdersType } from "@/utils/utils";
+import { registerOrderFormSchema, RegisterOrderFormSchema, UserShowType } from "@/validations/validations";
+import { calcularTotal, formatFac, formatNameRP, formatRPNumber } from "@/utils/utils";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ErrorMessage from "../ErrorMessage";
+import { Encomendas } from "@prisma/client";
 
-export default function Header() {
+export default function Header({user}: UserShowType) {
   const router = useRouter();
-
-  const { user, setUser } = useMe();
-  const { orders, setOrders } = useOrders();
-  const [registerOrder, setRegisterOrder] = useState({
-    userId: -1,
-    name: "",
-    contactPhone: "",
-    fac: "",
-    item: "K2",
-    quantity: "",
-  });
+  const { orders } = useOrders();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  
+  const {register, handleSubmit, formState: { errors }} = useForm<RegisterOrderFormSchema>({
+    mode: "all",
+    resolver: zodResolver(registerOrderFormSchema),
+    defaultValues: {
+      userId: user.id,
+      createdBy: user.nameRP,
+      name: user.provider !== "admin" ? user.nameRP : '',
+      fac: user.provider !== "admin" ? user.fac : '',
+      contactPhone: user.provider !== "admin" ? user.rpNumber : ''
+    }
+  });
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -33,45 +43,22 @@ export default function Header() {
     setIsModalOpen(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (user?.provider === "admin") {
-      setRegisterOrder({
-        ...registerOrder,
-        [e.target.name]: e.target.value,
-      });
-    } else {
-      setRegisterOrder({
-        ...registerOrder,
-        name: user?.nameRP || "",
-        fac: user?.fac || "",
-        contactPhone: user?.rpNumber || "",
-        [e.target.name]: e.target.value,
-      });
-    }
-  };
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRegisterOrder({
-      ...registerOrder,
-      item: e.target.value, // Atualiza o valor 'fac' com o valor selecionado do <select>
-    });
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/");
   };
-
-  const handleSubmit = async () => {
+  
+  const handleRegisterOrder = async (order: RegisterOrderFormSchema) => {
     try {
+      console.log(order)
       await axios.post(`${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder`, {
-        userId: user?.id,
-        createdBy: user?.nameRP,
-        name: registerOrder.name,
-        contactPhone: registerOrder.contactPhone,
-        fac: registerOrder.fac,
-        item: registerOrder.item,
-        quantity: registerOrder.quantity,
+        userId: order.userId,
+        createdBy: order.createdBy,
+        name: order.name,
+        contactPhone: order.contactPhone,
+        fac: order.fac,
+        item: order.item,
+        quantity: order.quantity,
       });
       toast.success("Encomenda cadastrada com sucesso!", {
         position: toast.POSITION.TOP_LEFT,
@@ -80,9 +67,9 @@ export default function Header() {
     } catch (err) {
       //@ts-ignore
       if (err instanceof AxiosError && err.response.status === 400) {
-        toast.error("As credenciais devem ser inseridas", {
-          position: toast.POSITION.TOP_LEFT,
-        });
+          toast.error("As credenciais devem ser inseridas", {
+            position: toast.POSITION.TOP_LEFT,
+          });
       } else {
         toast.error("Não foi possível cadastrar essa encomenda", {
           position: toast.POSITION.TOP_LEFT,
@@ -92,9 +79,9 @@ export default function Header() {
   };
 
   const filteredOrders =
-    user?.provider === "admin"
+    user.provider === "admin"
       ? orders
-      : orders.filter((order: OrdersType) => order.userId === user?.id);
+      : orders.filter((order: Encomendas) => order.userId === user.id);
 
   const total = calcularTotal(filteredOrders);
 
@@ -127,14 +114,12 @@ export default function Header() {
         contentLabel="Register Modal"
         style={{
           overlay: {
-            // Estilo do overlay (fundo por trás do modal)
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           },
           content: {
-            // Estilo do conteúdo do modal
             width: "40%",
-            height: "75%", // Defina a largura desejada aqui
-            margin: "auto", // Isso centralizará o modal horizontalmente
+            height: "75%",
+            margin: "auto",
           },
         }}
       >
@@ -151,53 +136,57 @@ export default function Header() {
             </h1>
             <form
               className="flex flex-col gap-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-              }}
+              onSubmit={handleSubmit(handleRegisterOrder)}
             >
               {user?.provider === "admin" && (
                 <>
                   <input
                     autoComplete="off"
-                    name="name"
                     type="text"
                     className="bg-slate-200 rounded-md p-4 appearance-none"
                     placeholder="Nome"
-                    onChange={handleChange}
+                    {...register('name', {
+                      onChange: formatNameRP
+                    })}
                   />
+                  {errors.name && <ErrorMessage message={errors.name.message}/>}
                   <input
                     autoComplete="off"
-                    name="fac"
                     type="text"
                     className="bg-slate-200 rounded-md p-4 appearance-none"
                     placeholder="Facção"
-                    onChange={handleChange}
+                    {...register('fac', {
+                      onChange: formatFac
+                    })}
                   />
+                  {errors.fac && <ErrorMessage message={errors.fac.message}/>}
                   <input
                     autoComplete="off"
-                    name="contactPhone"
                     type="text"
                     className="bg-slate-200 rounded-md p-4 appearance-none"
                     placeholder="Número"
-                    onChange={handleChange}
+                    {...register('contactPhone', {
+                      onChange: formatRPNumber
+                    })}
                   />
+                  {errors.contactPhone && <ErrorMessage message={errors.contactPhone.message}/>}
                 </>
               )}
               <select
                 className="bg-slate-200 rounded-md p-4 appearance-none"
-                defaultValue={registerOrder.item}
-                onChange={handleSelectChange}
-              >
+                defaultValue={"ZN"}
+                {...register('item')}
+                >
                 <option value="K2">K2</option>
               </select>
+              {errors.item && <ErrorMessage message={errors.item.message}/>}
               <input
-                name="quantity"
-                type="number"
-                className="bg-slate-200 rounded-md p-4 appearance-none"
-                placeholder="Quantidade"
-                onChange={handleChange}
+              type="number"
+              className="bg-slate-200 rounded-md p-4 appearance-none"
+              placeholder="Quantidade"
+              {...register("quantity")}
               />
+              {errors.quantity && <ErrorMessage message={errors.quantity.message}/>}
               <input
                 type="submit"
                 className="text-white bg-green-400 py-6 rounded-md hover:cursor-pointer text-lg"

@@ -4,9 +4,17 @@ import { sign } from "jsonwebtoken";
 import { compareSync, hashSync } from "bcryptjs";
 
 import { prismaClient } from "@/database/client";
+import { loginUserFormSchema } from "@/validations/validations";
 
 export async function POST(req: NextRequest) {
-  const { username, password } = await req.json();
+  const body = await req.json();
+  const parsedBody = loginUserFormSchema.safeParse(body)
+
+  if(!parsedBody.success) {
+    return NextResponse.json(parsedBody.error)
+  }
+
+  const { username, password } = parsedBody.data;
 
   if (!username || !password) {
     return NextResponse.json(

@@ -11,7 +11,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { toast, ToastContainer } from "react-toastify";
 
 import { useRouter } from "next/navigation";
-import { CreateLoginFormData, loginUserFormSchema, username } from "@/utils/utils";
+import { formatUsername } from "@/utils/utils";
+import { CreateLoginFormData, loginUserFormSchema } from "@/validations/validations";
 import ErrorMessage from "@/components/ErrorMessage";
 
 export default function Home() {
@@ -64,7 +65,7 @@ export default function Home() {
           type="text"
           placeholder="Usuário"
           {...register('username', {
-            onChange: username
+            onChange: formatUsername
           })}
           autoComplete='off'
         />

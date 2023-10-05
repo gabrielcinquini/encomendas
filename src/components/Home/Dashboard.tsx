@@ -3,16 +3,16 @@
 import "react-toastify/dist/ReactToastify.css";
 
 import { ToastContainer, toast } from "react-toastify";
-import { OrdersType, time } from "@/utils/utils";
-import { useMe } from "@/hooks/useMe";
+import { time } from "@/utils/utils";
 import { useOrders } from "@/hooks/useOrders";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import axios from "axios";
 import { useState } from "react";
+import { Encomendas } from "@prisma/client";
+import { UserShowType } from "@/validations/validations";
 
-export default function Dashboard() {
+export default function Dashboard({user}: UserShowType) {
   const { orders, setOrders } = useOrders();
-  const { user, setUser } = useMe();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -25,7 +25,7 @@ export default function Dashboard() {
       await axios.delete(`${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder/${id}`);
 
       setOrders((prevState) => {
-        return prevState.filter((order: OrdersType) => order.id !== id);
+        return prevState.filter((order: Encomendas) => order.id !== id);
       });
 
       toast.success("Encomenda removida com sucesso!", {
@@ -39,10 +39,9 @@ export default function Dashboard() {
   const filteredOrders =
     user?.provider === "admin"
       ? orders
-      : orders.filter((order: OrdersType) => order.userId === user?.id);
+      : orders.filter((order: Encomendas) => order.userId === user?.id);
 
   const totalPages = filteredOrders.length > 0 ? Math.ceil(filteredOrders.length / itemsPerPage) : 1;
-  console.log(filteredOrders.length)
 
   return (
     <div>
@@ -63,7 +62,7 @@ export default function Dashboard() {
           <tbody>
             {filteredOrders
               .slice(startIndex, endIndex)
-              .map((order: OrdersType) => (
+              .map((order: Encomendas) => (
                 <tr key={order.id} className="bg-green-700">
                   <td className="p-2">{order.createdBy}</td>
                   <td>
@@ -78,7 +77,7 @@ export default function Dashboard() {
                       currency: "BRL",
                     })}
                   </td>
-                  <td>{time(order.createdAt)}</td>
+                  <td>{time(order.createdAt.toString())}</td>
                   <td align="right">
                     <button
                       className="bg-red-800 p-2 rounded-md"
@@ -106,7 +105,7 @@ export default function Dashboard() {
           <tbody>
             {filteredOrders
               .slice(startIndex, endIndex)
-              .map((order: OrdersType) => (
+              .map((order: Encomendas) => (
                 <tr key={order.id} className="bg-green-700">
                   <td className="p-2">{order.item}</td>
                   <td>{order.quantity}</td>
@@ -120,7 +119,6 @@ export default function Dashboard() {
                     <button
                       className="bg-red-800 p-2 rounded-md"
                       onClick={() => {
-                        console.log(order.id);
                         handleDelete(order.id);
                       }}
                     >

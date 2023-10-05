@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { formatName } from "@/utils/utils";
 import { prismaClient } from "@/database/client";
+import { registerOrderFormSchema } from "@/validations/validations";
 
+//TODO: ZOD ERRORS
 export async function GET() {
   const orders = await prismaClient.encomendas.findMany({
     orderBy: {
@@ -13,10 +14,16 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { createdBy, userId, fac, item, quantity, contactPhone, name } =
-    await req.json();
+  const body = await req.json();
 
-  if (!fac || !item || !quantity || !contactPhone || userId === -1 || !name) {
+  const parsedBody = registerOrderFormSchema.safeParse(body);
+  if(!parsedBody.success) {
+    return NextResponse.json(parsedBody.error)
+  }
+
+  const { createdBy, userId, fac, item, quantity, contactPhone, name } = parsedBody.data;
+
+  if (!fac || !item || !quantity || !contactPhone || !name) {
     return NextResponse.json(
       { message: "As credenciais devem ser inseridas" },
       { status: 400 }
@@ -35,5 +42,5 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ newOrder: newOrder });
+  return NextResponse.json({ newOrder });
 }
