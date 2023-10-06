@@ -29,17 +29,15 @@ export function calcularTotal(orders: Encomendas[]) {
 }
 
 export function time(timestamp: string): string {
-  const date = new Date(timestamp);
-  date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
-  const dia = date.getUTCDate();
-  const mes = date.getUTCMonth() + 1;
-  const hora = date.getUTCHours();
-  const minuto = date.getUTCMinutes();
+  const data = new Date(timestamp);
+  data.setTime(data.getTime() - data.getTimezoneOffset() * 60000);
 
-  const diaFormatado = dia.toString().padStart(2, "0");
-  const mesFormatado = mes.toString().padStart(2, "0");
+  const dia = data.getUTCDate().toString().padStart(2, "0");
+  const mes = (data.getUTCMonth() + 1).toString().padStart(2, "0");
+  const hora = data.getUTCHours().toString().padStart(2, "0");
+  const minuto = data.getUTCMinutes().toString().padStart(2, "0");
 
-  return `${diaFormatado}/${mesFormatado} às ${hora}:${minuto}`;
+  return `${dia}/${mes} às ${hora}:${minuto}`;
 }
 
 export function formatUsername(event: React.ChangeEvent<HTMLInputElement>) {
