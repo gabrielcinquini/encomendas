@@ -1,3 +1,4 @@
+import { OrderSchemaData } from "@/validations/validations";
 import { Encomendas } from "@prisma/client";
 
 export function formatName(name: string) {
@@ -12,7 +13,7 @@ export function formatName(name: string) {
   return formattedName.join(" ");
 }
 
-export function calcularTotal(orders: Encomendas[]) {
+export function calcularTotal(orders: OrderSchemaData[]) {
   const totalQuantidades = orders.reduce((total, order) => {
     const quantidade = parseInt(order.quantity.toString(), 10);
 

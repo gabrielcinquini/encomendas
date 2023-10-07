@@ -8,10 +8,9 @@ import { useOrders } from "@/hooks/useOrders";
 import { Trash2 } from "lucide-react";
 import axios from "axios";
 import { useState } from "react";
-import { Encomendas } from "@prisma/client";
-import { UserShowType } from "@/validations/validations";
+import { OrderSchemaData, UserShowType } from "@/validations/validations";
 
-export default function Dashboard({user}: UserShowType) {
+export default function Dashboard({ user }: UserShowType) {
   const { orders, setOrders } = useOrders();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,10 +21,12 @@ export default function Dashboard({user}: UserShowType) {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder/${id}`);
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder/${id}`
+      );
 
       setOrders((prevState) => {
-        return prevState.filter((order: Encomendas) => order.id !== id);
+        return prevState.filter((order: OrderSchemaData) => order.id !== id);
       });
 
       toast.success("Encomenda removida com sucesso!", {
@@ -37,15 +38,18 @@ export default function Dashboard({user}: UserShowType) {
   };
 
   const filteredOrders =
-    user?.provider === "admin"
+    user.provider === "admin"
       ? orders
-      : orders.filter((order: Encomendas) => order.userId === user?.id);
+      : orders.filter((order: OrderSchemaData) => order.userId === user?.id);
 
-  const totalPages = filteredOrders.length > 0 ? Math.ceil(filteredOrders.length / itemsPerPage) : 1;
+  const totalPages =
+    filteredOrders.length > 0
+      ? Math.ceil(filteredOrders.length / itemsPerPage)
+      : 1;
 
   return (
     <div>
-      {user?.provider === "admin" ? (
+      {user.provider === "admin" ? (
         <table className="w-full border-separate border-spacing-y-2 p-8">
           <thead className="text-left">
             <tr className="text-white">
@@ -62,7 +66,7 @@ export default function Dashboard({user}: UserShowType) {
           <tbody>
             {filteredOrders
               .slice(startIndex, endIndex)
-              .map((order: Encomendas) => (
+              .map((order: OrderSchemaData) => (
                 <tr key={order.id} className="bg-green-700">
                   <td className="p-2">{order.createdBy}</td>
                   <td>
@@ -105,7 +109,7 @@ export default function Dashboard({user}: UserShowType) {
           <tbody>
             {filteredOrders
               .slice(startIndex, endIndex)
-              .map((order: Encomendas) => (
+              .map((order: OrderSchemaData) => (
                 <tr key={order.id} className="bg-green-700">
                   <td className="p-2">{order.item}</td>
                   <td>{order.quantity}</td>

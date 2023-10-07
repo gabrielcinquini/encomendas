@@ -6,7 +6,7 @@ import { registerOrderFormSchema } from "@/validations/validations";
 export async function GET() {
   const orders = await prismaClient.encomendas.findMany({
     orderBy: {
-      createdAt: "desc",
+      createdAt: "asc",
     },
   });
 
