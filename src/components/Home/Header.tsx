@@ -9,7 +9,7 @@ import axios, { AxiosError } from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useOrders } from "@/hooks/useOrders";
-import { OrderSchemaData, registerOrderFormSchema, RegisterOrderFormSchema, UserShowType } from "@/validations/validations";
+import { OrderSchemaData, registerOrderFormSchema, RegisterOrderFormSchemaData, UserShowType } from "@/validations/validations";
 import { calcularTotal, formatFac, formatNameRP, formatRPNumber } from "@/utils/utils";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,7 @@ export default function Header({user}: UserShowType) {
   const { orders, setOrders } = useOrders();
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const {register, handleSubmit, formState: { errors }} = useForm<RegisterOrderFormSchema>({
+  const {register, handleSubmit, formState: { errors }} = useForm<RegisterOrderFormSchemaData>({
     mode: "all",
     resolver: zodResolver(registerOrderFormSchema),
     defaultValues: {
@@ -46,7 +46,7 @@ export default function Header({user}: UserShowType) {
     router.push("/");
   };
   
-  const handleRegisterOrder = async (order: RegisterOrderFormSchema) => {
+  const handleRegisterOrder = async (order: RegisterOrderFormSchemaData) => {
     try {
       await axios.post(`${process.env.NEXT_PUBLIC_APIURL}/api/registerOrder`, {
         userId: order.userId,

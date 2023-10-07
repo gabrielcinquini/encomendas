@@ -73,7 +73,7 @@ export const registerOrderFormSchema = orderSchema
     createdAt: true,
   })
   .strict();
-export type RegisterOrderFormSchema = z.infer<typeof registerOrderFormSchema>;
+export type RegisterOrderFormSchemaData = z.infer<typeof registerOrderFormSchema>;
 
 export type UserShowType = {
   user: Omit<User, "password" | "lastLogin">;
